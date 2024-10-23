@@ -1,35 +1,76 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {useState, useEffect} from 'react';
+import data from "./data/demographic_data_2000-2023.json";
+import Controler from './components/Controler/Controler';
+import { DemographicData } from './interface/interface';
+import DataChart from './components/DataChart/DataChart';
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [demoData, setDemoData] = useState<DemographicData[]>(data);
+  const [total, setTotal] = useState<number>(0);
+  const [name, setName] = useState<string>('');
+  const [tempName, setTempName] = useState<string>('');
+  const [dataPerYear, setDataPerYear] = useState<{Rok: number; Liczba: number, Mężczyzna: number, Kobieta:number}[]>();
+
+  useEffect(() => {
+    const totalData = data.reduce((acc, current) => {
+      return acc + current.Liczba;
+    }, 0)
+    setTotal(totalData);
+
+  },[])
+
+  const updateData = (name:string) => {
+    const tempData = data.reduce((acc, current) => {
+      return current.Imię === name.toUpperCase() ? acc + current.Liczba : acc;
+    }, 0);
+    return setTotal(tempData), setTempName(name.toUpperCase());
+  }
+
+  const handleClick = () => {
+    updateData(name);
+    setName('');
+  }
+
+  //agregacja dzieci per rok
+  const aggregatedData = data.reduce((acc, current) => {
+    const found = acc.find(item => item.Rok === current.Rok);
+    
+    if (found) {
+      found.Liczba += current.Liczba;
+      if (current.Płeć === "M") {
+        found.Mężczyzna += current.Liczba;
+      } else if (current.Płeć === "K") {
+        found.Kobieta += current.Liczba;
+      }
+    } else {
+      acc.push({ Rok: current.Rok, 
+        Liczba: current.Liczba ,
+        Mężczyzna: current.Płeć === "M" ? current.Liczba : 0,
+        Kobieta: current.Płeć === "K" ? current.Liczba : 0
+      });
+    }
+    
+    return acc;
+  }, [] as { Rok: number; Liczba: number; Mężczyzna: number, Kobieta:number }[]);
+
+  useEffect(() => {
+    setDataPerYear(aggregatedData);
+  },[])
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <main className="container">
+      <h1>Łączna liczba dzieci {tempName ? `o imieniu ${tempName}` : ''} urodzonych w polsce od 2000 do 2023 roku: {total.toLocaleString('pl-PL', { minimumFractionDigits: 0 })}</h1>
+      <label htmlFor="name">
+        Wpisz imię:
+        <input type="text" name="name" value={name} onChange={(e) => setName(e.target.value)}/>
+      </label>
+      <button disabled={!name} onClick={() => handleClick()}>Wyszukaj</button>
+      <Controler data={data}/>
+      <DataChart data={dataPerYear}/>
+
+    </main>
   )
 }
 
-export default App
+export default App;

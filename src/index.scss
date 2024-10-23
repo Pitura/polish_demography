@@ -1,0 +1,40 @@
+:root {
+   --bg: linear-gradient(0deg, rgba(251,83,11,1) 0%, rgba(247,123,20,1) 5%, rgba(255,158,0,1) 10%, rgba(17,89,170,1) 50%);
+   --font-light: #e1eded;
+   --font: 'Montserrat', sans-serif;
+   // --box-shadow: 
+}
+
+html {
+   font-size: clamp(12px, 2vw, 18px);
+}
+
+*,
+*::before,
+*::after {
+   box-sizing: border-box;
+   margin: 0;
+   padding: 0;
+   font-family: var(--font);
+   color: var(--font-light);
+   font-size: 1rem;
+}
+
+body {
+   min-height: 100vh;
+   background-image: var(--bg);
+}
+
+.container {
+   max-width: 1600px;
+   padding: 20px;
+   margin: 0 auto;
+}
+
+
+
+
+
+@media screen and (width < 756px) {
+   
+}
