@@ -25,13 +25,24 @@ body {
    background-image: var(--bg);
 }
 
+button {
+   padding: 0;
+   border: none;
+   background-color: transparent;
+}
+
 .container {
    max-width: 1600px;
    padding: 20px;
    margin: 0 auto;
 }
 
-
+.chartBg {
+   background-color: royalblue;
+   padding: 20px;
+   border-radius: 10px;
+   border-color: rgba(233, 230, 226, 0.788);
+}
 
 
 
