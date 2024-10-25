@@ -19,7 +19,9 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Box
 } from "@mui/material";
+import style from "./DetailedNameChart.module.scss";
 
 ChartJS.register(
   CategoryScale,
@@ -31,6 +33,9 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+ChartJS.defaults.color = '#e1eded';
+ChartJS.defaults.borderColor= "#e1eded25";
 
 interface Props {
   data: DemographicData[] | any[];
@@ -66,7 +71,6 @@ const DetailedNameChart: FC<Props> = ({ data }) => {
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [availableYears, setAvailableYears] = useState<number[]>([]);
 
-  // Pobierz unikalne lata z danych
   useEffect(() => {
     const uniqueYears = Array.from(new Set(data.map((d: any) => d.Rok))).sort(
       (a, b) => a - b
@@ -74,7 +78,6 @@ const DetailedNameChart: FC<Props> = ({ data }) => {
     setAvailableYears(uniqueYears);
   }, []);
 
-  // Filtruj dane na podstawie wybranego imienia, płci i roku
   useEffect(() => {
     let filtered = data;
 
@@ -83,13 +86,11 @@ const DetailedNameChart: FC<Props> = ({ data }) => {
     }
 
     if (selectedNames.length > 0) {
-      // Jeśli imię jest wybrane, nie filtrujemy roku
       filtered = filtered.filter((d: any) => selectedNames.includes(d.Imię));
     } else if (year !== "All") {
       filtered = filtered.filter((d: any) => d.Rok === year);
     }
 
-    // Jeśli nie ma wybranych imion, pokaż top 20 imion
     if (selectedNames.length === 0) {
       const groupedByNames = filtered.reduce((acc: any, curr: any) => {
         if (!acc[curr.Imię]) acc[curr.Imię] = 0;
@@ -115,14 +116,12 @@ const DetailedNameChart: FC<Props> = ({ data }) => {
   ) => {
     let totalForGenderAndYear;
 
-    // Gdy rok i płeć są ustawione na "All", liczymy sumę wszystkich danych
     if (year === "All" && gender === "All") {
       totalForGenderAndYear = data.reduce(
         (acc: number, curr: any) => acc + curr.Liczba,
         0
       );
     } else {
-      // Filtrujemy dane na podstawie wybranej płci i roku
       totalForGenderAndYear = data
         .filter(
           (d: any) =>
@@ -157,15 +156,15 @@ const DetailedNameChart: FC<Props> = ({ data }) => {
         ? selectedNames.map((name, index) => {
             const nameData = availableYears.map((yr) => {
               const found = data.find((d) => d.Rok === yr && d.Imię === name);
-              return found ? found.Liczba : 0; // Jeśli brak danych dla danego roku, zwróć 0
+              return found ? found.Liczba : 0;
             });
 
             return {
               label: name,
               data: nameData,
-              borderColor: colorPalette[index % colorPalette.length], // Stały kolor dla każdego imienia
-              backgroundColor: "rgba(0, 0, 0, 0)",
-              tension: 0.4, // Smoothing dla linii
+              borderColor: colorPalette[index % colorPalette.length],
+              backgroundColor: "#fff",
+              tension: 0.4,
               fill: false,
             };
           })
@@ -180,58 +179,54 @@ const DetailedNameChart: FC<Props> = ({ data }) => {
   };
 
   return (
-    <div>
-      <h2>Ranking Imion - Top 20</h2>
-
-      {/* Kontrolki filtrów */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "20px",
-        }}
+    <div className={style.chartContainer}>
+      <Box
+        className={style.controlGroup}
       >
-        {/* Autocomplete dla imion */}
         <Autocomplete
           multiple
           options={Array.from(new Set(data.map((d: any) => d.Imię)))}
           onChange={(event, value) => {
-            setSelectedNames(value.slice(0, 10)); // Ograniczenie do 10 imion
-            setYear("All"); // Resetuj rok po wybraniu imion
+            setSelectedNames(value.slice(0, 10));
+            setYear("All");
+            setGender("All");
           }}
-          renderInput={(params) => <TextField {...params} label="Imiona" />}
+          renderInput={(params) => <TextField {...params} label="Imiona"/>}
           filterSelectedOptions
           autoHighlight
+          noOptionsText={'Brak'}
+          className={style.firstBox}
         />
 
-        {/* Filtr płci */}
-        <FormControl>
-          <InputLabel>Płeć</InputLabel>
-          <Select value={gender} onChange={(e) => setGender(e.target.value)}>
-            <MenuItem value="All">Całość</MenuItem>
-            <MenuItem value="M">Mężczyzna</MenuItem>
-            <MenuItem value="K">Kobieta</MenuItem>
-          </Select>
-        </FormControl>
+        <Box
+          className={style.secondBox}
+        >
+          <FormControl sx={{ flex: "1 1 auto" }} disabled={selectedNames.length > 0}>
+            <InputLabel>Płeć</InputLabel>
+            <Select value={gender} onChange={(e) => setGender(e.target.value)}>
+              <MenuItem value="All">Całość</MenuItem>
+              <MenuItem value="M">Mężczyzna</MenuItem>
+              <MenuItem value="K">Kobieta</MenuItem>
+            </Select>
+          </FormControl>
 
-        {/* Filtr roku */}
-        <FormControl disabled={selectedNames.length > 0}>
-          <InputLabel>Rok</InputLabel>
-          <Select
-            value={year}
-            onChange={(e) => setYear(e.target.value as number | "All")}
-          >
-            <MenuItem value="All">Całość</MenuItem>
-            {availableYears.map((y) => (
-              <MenuItem key={y} value={y}>
-                {y}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
+          <FormControl sx={{ flex: "1 1 auto" }} disabled={selectedNames.length > 0}>
+            <InputLabel>Rok</InputLabel>
+            <Select
+              value={year}
+              onChange={(e) => setYear(e.target.value as number | "All")}
+            >
+              <MenuItem value="All">Całość</MenuItem>
+              {availableYears.map((y) => (
+                <MenuItem key={y} value={y}>
+                  {y}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+      </Box>
 
-      {/* Wyświetl wykres: Słupkowy, jeśli nie wybrano imion, Liniowy, jeśli wybrano */}
       {selectedNames.length === 0 ? (
         <Bar
           data={chartData}
@@ -256,19 +251,20 @@ const DetailedNameChart: FC<Props> = ({ data }) => {
               },
               legend: {
                 position: "top",
+                display: false,
               },
             },
             scales: {
               y: {
                 beginAtZero: true,
                 title: {
-                  display: true,
+                  display: false,
                   text: "Ilość",
                 },
               },
               x: {
                 title: {
-                  display: true,
+                  display: false,
                   text: "Imię",
                 },
               },
@@ -281,7 +277,6 @@ const DetailedNameChart: FC<Props> = ({ data }) => {
           options={{
             responsive: true,
             plugins: {
-
               legend: {
                 position: "top",
               },
@@ -290,13 +285,13 @@ const DetailedNameChart: FC<Props> = ({ data }) => {
               y: {
                 beginAtZero: true,
                 title: {
-                  display: true,
+                  display: false,
                   text: "Ilość",
                 },
               },
               x: {
                 title: {
-                  display: true,
+                  display: false,
                   text: "Rok",
                 },
               },

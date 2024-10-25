@@ -3,6 +3,11 @@
    --font-light: #e1eded;
    --font: 'Montserrat', sans-serif;
    // --box-shadow: 
+   --bg-2: rgb(114, 74, 74);
+
+   --color-1: #1A237E;
+   --color-2: #424242;
+   --color-3: #00ACC1;
 }
 
 html {
@@ -18,11 +23,23 @@ html {
    font-family: var(--font);
    color: var(--font-light);
    font-size: 1rem;
+   border-color: var(--font-light) !important;
 }
 
 body {
    min-height: 100vh;
-   background-image: var(--bg);
+   // background-image: var(--bg);
+   background-color: var(--color-1);
+
+   div[role=combobox] {
+      color: var(--font-light);
+      -webkit-text-fill-color: var(--font-light) !important;
+   }
+
+   div[role=listbox],
+   ul {
+      background-color: var(--color-2);
+   }
 }
 
 button {
@@ -38,11 +55,26 @@ button {
 }
 
 .chartBg {
-   background-color: royalblue;
+   background-color: var(--color-2);
    padding: 20px;
    border-radius: 10px;
    border-color: rgba(233, 230, 226, 0.788);
 }
+
+ /* width */
+ ::-webkit-scrollbar {
+   background: silver;
+   width: 10px;
+ }
+ /* Track */
+ ::-webkit-scrollbar-track {
+   box-shadow: inset 0 0 5px black
+ }
+ /* Handle */
+ ::-webkit-scrollbar-thumb {
+   background: royalblue;
+   border-radius: 10px;
+ } 
 
 
 
