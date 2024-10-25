@@ -186,6 +186,7 @@ const DetailedNameChart: FC<Props> = ({ data }) => {
         <Autocomplete
           multiple
           options={Array.from(new Set(data.map((d: any) => d.Imię)))}
+          //@ts-ignore
           onChange={(event, value) => {
             setSelectedNames(value.slice(0, 10));
             setYear("All");
