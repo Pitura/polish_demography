@@ -19,7 +19,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Box
+  Box,
 } from "@mui/material";
 import style from "./DetailedNameChart.module.scss";
 
@@ -34,8 +34,8 @@ ChartJS.register(
   Legend
 );
 
-ChartJS.defaults.color = '#e1eded';
-ChartJS.defaults.borderColor= "#e1eded25";
+ChartJS.defaults.color = "#e1eded";
+ChartJS.defaults.borderColor = "#e1eded25";
 
 interface Props {
   data: DemographicData[] | any[];
@@ -180,9 +180,7 @@ const DetailedNameChart: FC<Props> = ({ data }) => {
 
   return (
     <div className={style.chartContainer}>
-      <Box
-        className={style.controlGroup}
-      >
+      <Box className={style.controlGroup}>
         <Autocomplete
           multiple
           options={Array.from(new Set(data.map((d: any) => d.Imię)))}
@@ -192,17 +190,18 @@ const DetailedNameChart: FC<Props> = ({ data }) => {
             setYear("All");
             setGender("All");
           }}
-          renderInput={(params) => <TextField {...params} label="Imiona"/>}
+          renderInput={(params) => <TextField {...params} label="Imiona" />}
           filterSelectedOptions
           autoHighlight
-          noOptionsText={'Brak'}
+          noOptionsText={"Brak"}
           className={style.firstBox}
         />
 
-        <Box
-          className={style.secondBox}
-        >
-          <FormControl sx={{ flex: "1 1 auto" }} disabled={selectedNames.length > 0}>
+        <Box className={style.secondBox}>
+          <FormControl
+            sx={{ flex: "1 1 auto" }}
+            disabled={selectedNames.length > 0}
+          >
             <InputLabel>Płeć</InputLabel>
             <Select value={gender} onChange={(e) => setGender(e.target.value)}>
               <MenuItem value="All">Całość</MenuItem>
@@ -211,7 +210,10 @@ const DetailedNameChart: FC<Props> = ({ data }) => {
             </Select>
           </FormControl>
 
-          <FormControl sx={{ flex: "1 1 auto" }} disabled={selectedNames.length > 0}>
+          <FormControl
+            sx={{ flex: "1 1 auto" }}
+            disabled={selectedNames.length > 0}
+          >
             <InputLabel>Rok</InputLabel>
             <Select
               value={year}
