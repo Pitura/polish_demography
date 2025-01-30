@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { initGA, logPageView } from "./analitics";
-import data from "./data/demographic_data_2000-2023.json";
+import data from "./data/demographic_data_2000-2024.json";
 import DetailedNameChart from "./components/DetailedNameChart/DetailedNameChart";
 import CookieConsent from "react-cookie-consent";
 
